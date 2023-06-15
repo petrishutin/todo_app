@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  frontend:
+    image: petrishutin/todo_frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - todo_app_network
+
+  backend:
+    image: petrishutin/todo_backend:latest
+    command: [ '/entrypoint.sh' ]
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    networks:
+      - todo_app_network
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27117:27017"
+    volumes:
+      - './.mongo:/var/lib/mongo'
+    networks:
+        - todo_app_network
+
+networks:
+    todo_app_network:
