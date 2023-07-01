@@ -13,15 +13,41 @@ spec:
       labels:
         app: todo-frontend
     spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: frontend-env
+          configMap:
+            name: frontend-config
       containers:
-      - name: todo-frontend
-        image: petrishutin/todo_frontend:latest
-        ports:
-        - containerPort: 80
-        volumeMounts:
-          - name: nginx-config
-            mountPath: /etc/nginx/nginx.conf
-            subPath: nginx.conf
+        - name: todo-frontend
+          image: petrishutin/todo_frontend:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: frontend-env
+              mountPath: /app/.env.production
+              subPath: env.production
+            - name: frontend-env
+              mountPath: /app/.env.development
+              subPath: env.development
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: todo
+data:
+  env.production: |
+    VUE_APP_API_ROOT=http://10.0.0.28:8000/api/v1/
+  env.development: |
+    VUE_APP_API_ROOT=http://10.0.0.28:8000/api/v1/
 
 ---
 apiVersion: v1
@@ -46,3 +72,20 @@ data:
         }
       }
     }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: todo
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
+spec:
+  selector:
+    app: todo-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
