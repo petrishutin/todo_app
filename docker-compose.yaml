@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   frontend:
-    image: petrishutin/todo_frontend:latest
+    image: us-central1-docker.pkg.dev/flawless-acre-387710/repo1/todo_frontend:latest
     ports:
       - "80:80"
     depends_on:
@@ -10,7 +10,7 @@ services:
       - todo_app_network
 
   backend:
-    image: petrishutin/todo_backend:latest
+    image: us-central1-docker.pkg.dev/flawless-acre-387710/repo1/todo_backend:latest
     command: [ '/entrypoint.sh' ]
     environment:
       - MONGO_URI=mongodb://mongo:27017

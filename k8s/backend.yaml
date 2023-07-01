@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: todo
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          command: ["/entrypoint.sh"]
+          image: us-central1-docker.pkg.dev/flawless-acre-387710/repo1/todo_backend:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongo.mongo.svc.cluster.local:27017
+      imagePullSecrets:
+        - name: registry
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: todo
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
+  labels:
+    app: backend
+spec:
+  ports:
+    - name: backend-port
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: backend
+  type: LoadBalancer

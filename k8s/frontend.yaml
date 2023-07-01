@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-frontend
+  namespace: todo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-frontend
+  template:
+    metadata:
+      labels:
+        app: todo-frontend
+    spec:
+      containers:
+      - name: todo-frontend
+        image: petrishutin/todo_frontend:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: todo
+data:
+  nginx.conf: |
+    events {
+      worker_connections  1024;
+    }
+    
+    http {
+      server {
+        listen 80;
+        server_name frontend;
+        root /usr/share/nginx/html;
+    
+        location / {
+          try_files $uri $uri/ /index.html;
+        }
+      }
+    }

@@ -1,0 +1,2 @@
+создать секрет: kubectl create secret docker-registry registry --docker-server=us-central1-docker.pkg.dev/august-gradient-382709/repo1  --docker-username=_json_key --docker-password="$(cat /home/petr/PycharmProjects/try/learning_k8s/k8s/project-credentials.json)" --docker-email=ishutinpetrdev@gmail.com -nstorage
+авторизоваться через json файл: gcloud auth activate-service-account main-139@flawless-acre-387710.iam.gserviceaccount.com --key-file=k8s/project-credentials.json --project=flawless-acre-387710

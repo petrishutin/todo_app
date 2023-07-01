@@ -1,2 +1,5 @@
 .idea
 .vs_code
+.mongo
+k8s/gcloudconf.json
+k8s/project-credentials.json
